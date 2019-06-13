@@ -1,10 +1,5 @@
 # Digital-Signature-System
 
-### This is a prototype for the freeCodeCamp's Cryptography lesson
+### A digital signature system implemented using RSA public key cryptosystem
 
-#### TODO:
-
-- [x] Hash the message to be sent
-- [x] Generate key pairs - public and private key using RSA
-- [ ] Encrypt the hash with the private key which acts as a signature and send the data along with the signature :running:
-- [ ] The receiver decrypts the signature with the public key and hashes the received data. Then checks if the decrypted signature and hash are equal or not. If equal then the signature is valid and message is from the expected source.
+#### To check the progress visit: https://github.com/vkWeb/Digital-Signature-System/projects/1

@@ -9,8 +9,8 @@ const generatedSignature = document.querySelector("#generated-signature");
 const receivedSignature = document.querySelector("#received-signature");
 const verificationStatus = document.querySelector("#verification-status");
 
-const firstPrime = 7;
-const secondPrime = 2;
+const firstPrime = 5;
+const secondPrime = 7;
 const N = firstPrime * secondPrime;
 const phiOfN = (firstPrime - 1) * (secondPrime - 1);
 let publicKey = 0;
@@ -39,22 +39,21 @@ function generatePrivateKey() {
     }
   }
 
-  console.log("\nPrivate key can't be generated.");
+  console.log("Private key can't be generated.");
   return 0;
 }
 
 function generatePublicKey(privateKey) {
-  if (!privateKey) {
-    console.log("\nPublic key can't be generated.");
-  } else {
-    publicKey = 1;
-    while (privateKey) {
-      if ((publicKey * privateKey) % phiOfN === 1 && privateKey !== publicKey) {
-        return;
-      }
-      publicKey += 1;
+  publicKey = 1;
+  while (privateKey) {
+    if ((publicKey * privateKey) % phiOfN === 1 && privateKey !== publicKey) {
+      return;
     }
+    ++publicKey;
   }
+
+  console.log("Public key can't be generated.");
+  publicKey = 0;
 }
 
 function generateSignature(hashValue, privateKey) {
@@ -97,9 +96,9 @@ verifyBtn.addEventListener("click", function() {
   );
 
   if (hashValue === decryptedSignature) {
-    verificationStatus.innerHTML = "Success! Signature is verified.";
+    verificationStatus.innerHTML = "Success! Data is verified.";
   } else {
     verificationStatus.innerHTML =
-      "Failure! There's something wrong with the signature.";
+      "Failure! There's something wrong with the received data.";
   }
 });

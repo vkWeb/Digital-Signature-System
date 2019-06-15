@@ -1,5 +1,9 @@
 body {
   font-family: sans-serif;
   color: #444444;
-  font-size: 20px;
+  font-size: 18px;
+}
+
+form {
+  display: inline-block;
 }

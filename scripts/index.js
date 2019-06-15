@@ -1,19 +1,28 @@
 "use strict";
 
-// Note: Fix the hard coded values
-// Initialize maximum hash value
-let MAX_HASHVALUE = 14;
+const signBtn = document.querySelector("#sign-btn");
+const transmitBtn = document.querySelector("#transmit-btn");
+const verifyBtn = document.querySelector("#verify-btn");
+const messageBox = document.querySelector("#message-to-be-sent");
+const receivedMessageBox = document.querySelector("#received-message");
+const generatedSignature = document.querySelector("#generated-signature");
+const receivedSignature = document.querySelector("#received-signature");
+const verificationStatus = document.querySelector("#verification-status");
 
-// Generate the hash value
+const firstPrime = 7;
+const secondPrime = 2;
+const N = firstPrime * secondPrime;
+const phiOfN = (firstPrime - 1) * (secondPrime - 1);
+let publicKey = 0;
+
 function hashTheMessage(message) {
   let hashValue = 0;
-  for (let i = 0, msgLength = message.length; i < msgLength; i++) {
+  for (let i = 0, msgLength = message.length; i < msgLength; ++i) {
     hashValue += message.charCodeAt(i);
   }
-  return hashValue % MAX_HASHVALUE;
+  return hashValue % N === 0 ? 1 : hashValue % N;
 }
 
-// Find whether the numbers are co-prime
 function isCoPrime(smallerNum, largerNum) {
   for (let i = 2; i <= smallerNum; ++i) {
     if (smallerNum % i === 0 && largerNum % i === 0) {
@@ -23,79 +32,74 @@ function isCoPrime(smallerNum, largerNum) {
   return true;
 }
 
-// Generate private key
-function generatePrivateKey(N, phiOfN) {
+function generatePrivateKey() {
   for (let i = 2; i < phiOfN; ++i) {
     if (isCoPrime(i, N) && isCoPrime(i, phiOfN)) {
       return i;
     }
   }
 
-  console.log("\nPrivate key can't be generated. Returning 0...");
+  console.log("\nPrivate key can't be generated.");
   return 0;
 }
 
-// Generate public key
-function generatePublicKey(privateKey, phiOfN) {
-  let publicKey = 1;
-  while (true) {
-    if ((publicKey * privateKey) % phiOfN === 1 && privateKey !== publicKey) {
-      break;
+function generatePublicKey(privateKey) {
+  if (!privateKey) {
+    console.log("\nPublic key can't be generated.");
+  } else {
+    publicKey = 1;
+    while (privateKey) {
+      if ((publicKey * privateKey) % phiOfN === 1 && privateKey !== publicKey) {
+        return;
+      }
+      publicKey += 1;
     }
-    ++publicKey;
   }
-
-  return publicKey;
 }
 
-// Generate key pairs using RSA algorithm
-function generateKeyPairsRSA(firstPrime, secondPrime) {
-  let N = firstPrime * secondPrime;
-  let phiOfN = (firstPrime - 1) * (secondPrime - 1);
-  let privateKey = generatePrivateKey(N, phiOfN);
-  let publicKey = generatePublicKey(privateKey, phiOfN);
-
-  let keyPairs = {
-    privateKey: [privateKey, N],
-    publicKey: [publicKey, N]
-  };
-
-  return keyPairs;
-}
-
-let hashValue = hashTheMessage("Hello world");
-console.log("Hash value of message is ", hashValue);
-
-let keyPairs = generateKeyPairsRSA(2, 7);
-console.log(
-  "Private key = ",
-  keyPairs.privateKey[0],
-  " Public key = ",
-  keyPairs.publicKey[0],
-  " N = ",
-  keyPairs.publicKey[1]
-);
-
-function generateSignature() {
-  let digitalSignature =
-    Math.pow(hashValue, keyPairs.privateKey[0]) % keyPairs.privateKey[1];
-  return digitalSignature;
+function generateSignature(hashValue, privateKey) {
+  return Math.pow(hashValue, privateKey) % N;
 }
 
 function decryptSignature(digitalSignature) {
-  let decryptedSignature =
-    Math.pow(digitalSignature, keyPairs.publicKey[0]) % keyPairs.publicKey[1];
-  return decryptedSignature;
+  return Math.pow(digitalSignature, publicKey) % N;
 }
 
-let digitalSignature = generateSignature();
-console.log("Signature generated is = ", digitalSignature);
+signBtn.addEventListener("click", function() {
+  let hashValue = hashTheMessage(messageBox.value);
+  let privateKey = generatePrivateKey();
+  generatePublicKey(privateKey);
 
-let decryptedSignature = decryptSignature(digitalSignature);
-console.log("Decrypted signature = ", decryptedSignature);
+  generatedSignature.innerHTML = generateSignature(
+    hashValue,
+    privateKey
+  ).toString();
 
-if (hashValue === decryptedSignature) {
-  console.log("Signature Verified! :tada:");
-} else {
-  console.log("Ooops, something is wrong.");
-}
+  transmitBtn.disabled = false;
+});
+
+messageBox.addEventListener("input", function() {
+  generatedSignature.innerHTML = "none";
+  transmitBtn.disabled = true;
+});
+
+transmitBtn.addEventListener("click", function() {
+  receivedMessageBox.value = messageBox.value;
+  receivedSignature.innerHTML = generatedSignature.textContent;
+  verificationStatus.innerHTML = "";
+  verifyBtn.disabled = false;
+});
+
+verifyBtn.addEventListener("click", function() {
+  let hashValue = hashTheMessage(receivedMessageBox.value);
+  let decryptedSignature = decryptSignature(
+    parseInt(receivedSignature.textContent)
+  );
+
+  if (hashValue === decryptedSignature) {
+    verificationStatus.innerHTML = "Success! Signature is verified.";
+  } else {
+    verificationStatus.innerHTML =
+      "Failure! There's something wrong with the signature.";
+  }
+});

@@ -3,12 +3,45 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Digital Signature System</title>
+    <title>freeCodeCamp Cryptography Lesson - Digital Signature System</title>
     <link rel="stylesheet" href="styles/style.css" />
   </head>
   <body>
-    <h1>Coming soon...</h1>
-    <p>Right now, things our under construction. Thanks for the patience.</p>
+    <form>
+      <fieldset>
+        <legend>Alice's workspace</legend>
+        <label for="message-to-be-sent">Enter message:</label>
+        <br />
+        <textarea id="message-to-be-sent" rows="16" cols="44" required>
+Hey Bob, this is Alice here. I want to share a secret message with you.</textarea
+        >
+        <p>Signature is <strong id="generated-signature">none</strong></p>
+        <button type="button" id="sign-btn">
+          Generate Signature
+        </button>
+        <button type="button" id="transmit-btn" disabled>
+          Transmit Data and Signature
+        </button>
+      </fieldset>
+    </form>
+
+    <form>
+      <fieldset>
+        <legend>Bob's workspace</legend>
+        <label for="received-message">Message received from Alice:</label>
+        <br />
+        <textarea id="received-message" rows="16" cols="44" readonly></textarea>
+        <p>
+          Signature of received document is
+          <strong id="received-signature">none</strong>
+        </p>
+        <p id="verification-status"></p>
+        <button type="button" id="verify-btn" disabled>
+          Verify Signature
+        </button>
+      </fieldset>
+    </form>
+
     <script src="scripts/index.js"></script>
   </body>
 </html>

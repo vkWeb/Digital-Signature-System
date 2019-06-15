@@ -9,8 +9,8 @@ const generatedSignature = document.querySelector("#generated-signature");
 const receivedSignature = document.querySelector("#received-signature");
 const verificationStatus = document.querySelector("#verification-status");
 
-const firstPrime = 5;
-const secondPrime = 7;
+const firstPrime = 3;
+const secondPrime = 19;
 const N = firstPrime * secondPrime;
 const phiOfN = (firstPrime - 1) * (secondPrime - 1);
 let publicKey = 0;

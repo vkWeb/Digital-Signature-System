@@ -6,13 +6,17 @@ body {
 
 form {
   display: inline-block;
-  margin: 24px;
+  margin: 1rem;
+}
+
+textarea {
+  resize: vertical;
 }
 
 fieldset {
-  padding: 32px;
+  padding: 1rem;
 }
 
 legend {
-  font-size: 24px;
+  font-size: 1.5rem;
 }

@@ -57,16 +57,21 @@ function generatePublicKey(privateKey) {
 }
 
 function generateSignature(hashValue, privateKey) {
-  return Math.pow(hashValue, privateKey) % N;
+  return Number(BigInt(BigInt(hashValue) ** BigInt(privateKey)) % BigInt(N));
 }
 
 function decryptSignature(digitalSignature) {
-  return Math.pow(digitalSignature, publicKey) % N;
+  return Number(BigInt(BigInt(digitalSignature) ** BigInt(publicKey)) % BigInt(N));
 }
 
-signBtn.addEventListener("click", function() {
-  let hashValue = hashTheMessage(messageBox.value);
-  let privateKey = generatePrivateKey();
+messageBox.addEventListener("input", function () {
+  generatedSignature.innerHTML = "none";
+  transmitBtn.disabled = true;
+});
+
+signBtn.addEventListener("click", function () {
+  const hashValue = hashTheMessage(messageBox.value);
+  const privateKey = generatePrivateKey();
   generatePublicKey(privateKey);
 
   generatedSignature.innerHTML = generateSignature(
@@ -77,28 +82,24 @@ signBtn.addEventListener("click", function() {
   transmitBtn.disabled = false;
 });
 
-messageBox.addEventListener("input", function() {
-  generatedSignature.innerHTML = "none";
-  transmitBtn.disabled = true;
-});
-
-transmitBtn.addEventListener("click", function() {
+transmitBtn.addEventListener("click", function () {
   receivedMessageBox.value = messageBox.value;
   receivedSignature.innerHTML = generatedSignature.textContent;
   verificationStatus.innerHTML = "";
   verifyBtn.disabled = false;
 });
 
-verifyBtn.addEventListener("click", function() {
-  let hashValue = hashTheMessage(receivedMessageBox.value);
-  let decryptedSignature = decryptSignature(
+verifyBtn.addEventListener("click", function () {
+  const hashValue = hashTheMessage(receivedMessageBox.value);
+  const decryptedSignature = decryptSignature(
     parseInt(receivedSignature.textContent)
   );
 
+  console.log("hashValue =", hashValue, "decryptedSignature =", decryptedSignature);
   if (hashValue === decryptedSignature) {
     verificationStatus.innerHTML = "Success! Data is verified.";
   } else {
     verificationStatus.innerHTML =
-      "Failure! There's something wrong with the received data.";
+      "Failure! There's something wrong with the received data or signature.";
   }
 });
